@@ -1,7 +1,6 @@
 package com.zphuan.retrofitdemo.http;
 
 import com.zphuan.retrofitdemo.mode.User;
-import com.zphuan.retrofitdemo.mode.Widget;
 
 import java.util.List;
 import java.util.Map;
@@ -13,6 +12,7 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.HTTP;
+import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -38,6 +38,14 @@ public interface GitHubService {
      */
     @GET("users/{user}")
     Call<User> getUser(@Path("user") String user);
+
+    /**
+     * 根据用户名得到当前用户信息
+     * @param user：GitHub用户名
+     * @return
+     */
+    @GET("users/{user}")
+    Call<String> getUser4Str(@Path("user") String user);
 
     /**
      * 通过Http注解的方式得到用户信息
@@ -89,7 +97,24 @@ public interface GitHubService {
     @PUT("user/photo")
     Call<User> updateUser(@Part("photo") RequestBody photo, @Part("description") RequestBody description);
 
-    @Headers("Cache-Control: max-age=640000")
-    @GET("widget/list")
-    Call<List<Widget>> widgetList();
+
+    /**
+     * 添加请求头信息
+     * @param username
+     * @return
+     */
+    @Headers({
+            "Accept: application/vnd.github.v3.full+json",
+            "User-Agent: Retrofit-Sample-App"
+    })
+    @GET("users/{username}")
+    Call<User> getUser2(@Path("username") String username);
+
+    /**
+     * 添加不固定的请求头信息
+     * @param username
+     * @return
+     */
+    @GET("users/{username}")
+    Call<User> getUser3(@Header("Accept-Language") String lang,@Path("username") String username);
 }

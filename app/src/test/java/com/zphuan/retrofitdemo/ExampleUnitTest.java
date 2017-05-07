@@ -1,5 +1,6 @@
 package com.zphuan.retrofitdemo;
 
+import com.zphuan.retrofitdemo.convert.StringConverterFactory;
 import com.zphuan.retrofitdemo.http.GitHubService;
 import com.zphuan.retrofitdemo.mode.User;
 
@@ -26,6 +27,18 @@ public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() throws Exception {
         assertEquals(4, 2 + 2);
+    }
+
+    @Test
+    public void testCustomConverter() throws Exception{
+        Retrofit retrofit = new Retrofit.Builder().
+                baseUrl(GitHubService.BASE_URL).
+                addConverterFactory(StringConverterFactory.create()).
+                build();
+        GitHubService service = retrofit.create(GitHubService.class);
+        Call<String> result = service.getUser4Str("zphuanlove");
+        String body = result.execute().body();
+        System.out.println("返回的结果:"+body);
     }
 
     @Test
@@ -91,11 +104,25 @@ public class ExampleUnitTest {
                 build();
         GitHubService service = retrofit.create(GitHubService.class);
         File file = new File("app/src/ic_launcher.png");
+        //以数据流的形式
         MediaType mediaType = MediaType.parse("application/octet-stream");
         RequestBody photo = RequestBody.create(mediaType,file);
+        //以文件的方式
         RequestBody description = RequestBody.create(MediaType.parse("text/plain"), "description");
         Call<User> updateUser = service.updateUser(photo, description);
         Response<User> response = updateUser.execute();
         System.out.println("updateUser:"+response.body());
+    }
+
+    @Test
+    public void testUser2() throws Exception{
+        Retrofit retrofit = new Retrofit.Builder().
+                baseUrl(GitHubService.BASE_URL).
+                addConverterFactory(GsonConverterFactory.create()).
+                build();
+        GitHubService service = retrofit.create(GitHubService.class);
+        Call<User> user2 = service.getUser2("zphuanlove");
+        User body = user2.execute().body();
+        System.out.println("body:"+body);
     }
 }
